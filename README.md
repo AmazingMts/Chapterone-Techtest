@@ -1,4 +1,6 @@
 # Chapterone-Techtest
+# DeployMethod:
+
 📱 Project Overview
 This is a simple mobile task management app built with React Native and Expo. It enables users to efficiently track jobs from creation to completion. The interface is clean and responsive, with a popup card for task input and real-time updates as tasks move between states.
 Core Features
