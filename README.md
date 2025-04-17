@@ -14,5 +14,4 @@ Core Features
 | 🧊 Popup Modal UI      | Card input appears in a floating overlay for better UX interaction      |
 
 ## App Structure
-
-        ![Structure](https://github.com/user-attachments/assets/be7d971d-6e6e-4962-89b3-4a6a3dac3714)
+![Structure](./Structure.png)
