@@ -12,4 +12,7 @@ Core Features
 | 📦 View Finished Tasks | Completed jobs are displayed in a separate, dedicated section           |
 | 🎯 Real-time Updates   | Task state updates and list rendering happen immediately and smoothly   |
 | 🧊 Popup Modal UI      | Card input appears in a floating overlay for better UX interaction      |
-![Structure](https://github.com/user-attachments/assets/be7d971d-6e6e-4962-89b3-4a6a3dac3714)
+
+## App Structure
+
+        ![Structure](https://github.com/user-attachments/assets/be7d971d-6e6e-4962-89b3-4a6a3dac3714)
