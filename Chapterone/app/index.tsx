@@ -1,10 +1,19 @@
-import { Text, View, ScrollView, StyleSheet, Button } from "react-native";
+import {
+  Text,
+  View,
+  ScrollView,
+  StyleSheet,
+  Button,
+  ImageBackground,
+  Dimensions,
+} from "react-native";
 import { useState, useRef } from "react";
 import Table from "../component/table";
 import Card from "../component/Card";
 
 export default function Index() {
-  const amount = useRef(2); // Counter for generating unique task IDs
+  const fixedTableWidth = 900;
+  const amount = useRef(2);
 
   const [FinishedJob, SetFinishedJob] = useState([]);
   const [onGoingJob, SetOnGoingJob] = useState([
@@ -17,9 +26,8 @@ export default function Index() {
     },
   ]);
 
-  const [displayCard, setDisplayCard] = useState(false); // Controls visibility of the input card
+  const [displayCard, setDisplayCard] = useState(false);
 
-  // Add a new task to the ongoing job list
   function addNew(title: string, description: string) {
     const now = new Date();
     const timeString = `${now.getFullYear()}-${
@@ -39,62 +47,87 @@ export default function Index() {
     setDisplayCard(false);
   }
 
-  // Move a task from ongoing to finished list
-  function attributeChange(id: number) {
-    const completed = onGoingJob.filter((item) => item.id === id);
-    const remaining = onGoingJob.filter((item) => item.id !== id);
-    SetFinishedJob([...FinishedJob, ...completed]);
-    SetOnGoingJob(remaining);
-  }
+  function attributeChange(id) {
+    const matched =
+      onGoingJob.find((item) => item.id === id) ||
+      FinishedJob.find((item) => item.id === id);
 
-  // Show / hide the card
-  function showCard() {
-    setDisplayCard(true);
-  }
+    if (!matched) return;
 
-  function hideCard() {
-    setDisplayCard(false);
+    const updatedItem = {
+      ...matched,
+      attribute: matched.attribute === "unfinished" ? "finished" : "unfinished",
+    };
+
+    if (updatedItem.attribute === "finished") {
+      SetOnGoingJob(onGoingJob.filter((item) => item.id !== id));
+      SetFinishedJob([...FinishedJob, updatedItem]);
+    } else {
+      SetFinishedJob(FinishedJob.filter((item) => item.id !== id));
+      SetOnGoingJob([...onGoingJob, updatedItem]);
+    }
   }
 
   return (
-    <View style={styles.container}>
-      {/* Add New Job Button */}
-      <View style={styles.button}>
-        <Button onPress={showCard} title="Create New Job" />
-      </View>
-
-      {/* Overlay for Card (popup input form) */}
-      {displayCard && (
-        <View style={styles.overlay}>
-          <Card close={hideCard} add={addNew} />
+    <ImageBackground
+      source={require("../assets/bg-chinese.jpg")}
+      style={{ flex: 1 }}
+      resizeMode="cover"
+    >
+      <View style={styles.container}>
+        <View style={styles.button}>
+          <Button onPress={() => setDisplayCard(true)} title="Create New Job" />
         </View>
-      )}
 
-      {/* Ongoing Jobs Section */}
-      <Text style={styles.sectionTitle}> Ongoing Jobs</Text>
-      <ScrollView style={styles.scrollArea}>
-        <Table data={onGoingJob} func={attributeChange} />
-      </ScrollView>
+        {displayCard && (
+          <View style={styles.overlay}>
+            <Card close={() => setDisplayCard(false)} add={addNew} />
+          </View>
+        )}
 
-      <Text style={styles.divider}>──────────────</Text>
+        {/* Ongoing Jobs */}
+        <Text style={styles.sectionTitleOngoing}>Ongoing Jobs</Text>
+        <ScrollView style={[styles.scrollArea, styles.ongoingBox]}>
+          <Table
+            data={onGoingJob}
+            func={attributeChange}
+            rowWidth={fixedTableWidth}
+          />
+        </ScrollView>
 
-      {/* Finished Jobs Section */}
-      <Text style={styles.sectionTitle}> Finished Jobs</Text>
-      <ScrollView style={styles.scrollArea}>
-        <Table data={FinishedJob} func={attributeChange} />
-      </ScrollView>
-    </View>
+        <View style={styles.sectionSpacer} />
+
+        {/* Finished Jobs */}
+        <Text style={styles.sectionTitleFinished}>Finished Jobs</Text>
+        <ScrollView style={[styles.scrollArea, styles.finishedBox]}>
+          <Table
+            data={FinishedJob}
+            func={attributeChange}
+            rowWidth={fixedTableWidth}
+          />
+        </ScrollView>
+      </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-    backgroundColor: "#f9f9f9",
+    padding: 24,
   },
   button: {
-    marginBottom: 16,
+    marginBottom: 20,
+    alignSelf: "center",
+    width: "80%",
+    borderRadius: 12,
+    overflow: "hidden",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 4,
+    backgroundColor: "#fff5e5",
   },
   overlay: {
     position: "absolute",
@@ -102,24 +135,49 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: "rgba(0, 0, 0, 0.3)",
+    backgroundColor: "rgba(0, 0, 0, 0.35)",
     justifyContent: "center",
     alignItems: "center",
     zIndex: 100,
+    padding: 20,
   },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
+  sectionTitleOngoing: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: "#c2410c",
     marginTop: 16,
-    marginBottom: 8,
+    marginBottom: 12,
+    paddingLeft: 4,
+  },
+  sectionTitleFinished: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: "#065f46",
+    marginTop: 16,
+    marginBottom: 12,
+    paddingLeft: 4,
   },
   scrollArea: {
-    maxHeight: 200,
-    marginBottom: 20,
+    marginBottom: 24,
+    borderRadius: 16,
+    padding: 12,
+    maxHeight: 320,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 3,
+    elevation: 2,
   },
-  divider: {
-    textAlign: "center",
-    color: "#aaa",
-    marginVertical: 8,
+  ongoingBox: {
+    backgroundColor: "rgba(255, 247, 230, 0.6)",
+  },
+  finishedBox: {
+    backgroundColor: "rgba(236, 253, 245, 0.5)",
+  },
+  sectionSpacer: {
+    height: 24,
+    borderBottomWidth: 1,
+    borderBottomColor: "#e5e7eb",
+    marginVertical: 12,
   },
 });
