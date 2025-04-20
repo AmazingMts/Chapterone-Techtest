@@ -70,9 +70,9 @@ export default function Index() {
 
   return (
     <ImageBackground
-      source={require("../assets/bg-chinese.jpg")}
+      source={require("../assets/bg-chinese.png")}
       style={{ flex: 1 }}
-      resizeMode="cover"
+      resizeMode="stretch"
     >
       <View style={styles.container}>
         <View style={styles.button}>
